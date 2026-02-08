@@ -49,7 +49,7 @@ function App() {
     };
     checkAuth();
   }, []);
-  
+
   // --- Auto-Fill Link on Load ---
   useEffect(() => {
     if (typeof chrome !== "undefined" && chrome.tabs) {
@@ -87,7 +87,7 @@ function App() {
             return reject("⚠️ Please REFRESH the LinkedIn page first!");
           }
           if (response && response.success) {
-            resolve(response.data); // 🎉 Success! Returns { headerText, descriptionText, url }
+            resolve(response.data);
           } else {
             reject("❌ Could not scrape page details.");
           }
@@ -193,7 +193,6 @@ function App() {
   };
 
   // UI section --------->
-
   const renderAiResult = () => {
     if (!aiResult) return null;
     const status = getMatchStatus(aiResult.score);
@@ -202,7 +201,10 @@ function App() {
       <div className="animate-fade-in space-y-4">
         {/* Header */}
         <div className="flex items-center">
-          <button onClick={() => setView('menu')} className="p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition">
+          <button
+            onClick={() => setView('menu')}
+            className="p-1 hover:bg-[#1E1E1E] rounded text-[#9CA3AF] hover:text-white transition-all"
+          >
             <ChevronLeft size={24} />
           </button>
           <h2 className="text-lg font-bold ml-2 text-white">AI Analysis</h2>
@@ -215,39 +217,55 @@ function App() {
         </div>
 
         {/* Missing Keywords */}
-        <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
-          <h3 className="text-gray-400 text-xs uppercase font-bold mb-3 flex items-center gap-2">
-            <Zap size={14} className="text-yellow-500" /> Missing Keywords
+        <div className="bg-[#141414] p-4 rounded-xl border border-[#2A2A2A]">
+          <h3 className="text-[#9CA3AF] text-xs uppercase font-bold mb-3 flex items-center gap-2">
+            <Zap size={14} className="text-[#F59E0B]" /> Missing Keywords
           </h3>
           <div className="flex flex-wrap gap-2">
             {aiResult.missingKeywords.map((kw, i) => (
-              <span key={i} className="bg-red-900/30 text-red-300 border border-red-800/50 px-3 py-1 rounded-lg text-sm font-medium">
+              <span
+                key={i}
+                className="bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30 px-3 py-1 rounded-lg text-sm font-medium"
+              >
                 {kw}
               </span>
             ))}
           </div>
         </div>
 
-        <button onClick={() => setView('manual')} className="w-full bg-gray-800 hover:bg-gray-700 py-3 rounded-xl text-sm font-bold text-gray-300 transition">
+        <button
+          onClick={() => setView('manual')}
+          className="w-full bg-[#1E1E1E] hover:bg-[#2A2A2A] border border-[#2A2A2A] py-3 rounded-xl text-sm font-bold text-[#E5E7EB] transition-all"
+        >
           Save this Job Anyway
         </button>
       </div>
     );
   };
-
-  // --- RENDER HELPERS ---
-
+  
   const renderMenu = () => (
     <div className="flex flex-col h-full space-y-4 pt-4">
       <div className="text-center mb-2">
-        <h1 className="text-2xl font-bold text-blue-500 flex items-center justify-center gap-2">
-          <Briefcase size={28} /> JobFlow AI
+        <h1 className="text-2xl font-bold text-white flex items-center justify-center gap-2">
+          <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center">
+            <Briefcase size={20} className="text-white" />
+          </div>
+          JobFlow AI
         </h1>
       </div>
 
-      <button onClick={handleAiCheck} disabled={loading} className="bg-purple-900/50 hover:bg-purple-900 border border-purple-700 text-purple-100 p-4 rounded-xl flex items-center gap-4 transition-all group w-full">
+      {/* AI Fit Check */}
+      <button
+        onClick={handleAiCheck}
+        disabled={loading}
+        className="bg-purple-900/30 hover:bg-purple-900/50 border border-purple-700/50 text-purple-100 p-4 rounded-xl flex items-center gap-4 transition-all group w-full"
+      >
         <div className="bg-purple-800 p-3 rounded-full group-hover:scale-110 transition">
-          {loading ? <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full" /> : <BrainCircuit size={24} />}
+          {loading ? (
+            <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full" />
+          ) : (
+            <BrainCircuit size={24} />
+          )}
         </div>
         <div className="text-left">
           <h3 className="font-bold">AI Fit Check</h3>
@@ -255,83 +273,152 @@ function App() {
         </div>
       </button>
 
-      <button onClick={handleQuickSave} className="bg-indigo-900/50 hover:bg-indigo-900 border border-indigo-700 text-indigo-100 p-4 rounded-xl flex items-center gap-4 transition-all group">
-        <div className="bg-indigo-800 p-3 rounded-full group-hover:scale-110 transition"><Zap size={24} /></div>
-        <div className="text-left"><h3 className="font-bold">1-Click Save</h3><p className="text-xs text-indigo-300">Auto-extract details</p></div>
+      {/* 1-Click Save */}
+      <button
+        onClick={handleQuickSave}
+        className="bg-indigo-900/30 hover:bg-indigo-900/50 border border-indigo-700/50 text-indigo-100 p-4 rounded-xl flex items-center gap-4 transition-all group"
+      >
+        <div className="bg-indigo-800 p-3 rounded-full group-hover:scale-110 transition">
+          <Zap size={24} />
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold">1-Click Save</h3>
+          <p className="text-xs text-indigo-300">Auto-extract details</p>
+        </div>
       </button>
 
-      <button onClick={() => setView('manual')} className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-gray-100 p-4 rounded-xl flex items-center gap-4 transition-all group">
-        <div className="bg-gray-700 p-3 rounded-full group-hover:scale-110 transition"><ClipboardList size={24} /></div>
-        <div className="text-left"><h3 className="font-bold">Manual Entry</h3><p className="text-xs text-gray-400">Fill form yourself</p></div>
+      {/* Manual Entry */}
+      <button
+        onClick={() => setView('manual')}
+        className="bg-[#1E1E1E] hover:bg-[#2A2A2A] border border-[#2A2A2A] text-gray-100 p-4 rounded-xl flex items-center gap-4 transition-all group"
+      >
+        <div className="bg-[#2A2A2A] p-3 rounded-full group-hover:scale-110 transition">
+          <ClipboardList size={24} />
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold">Manual Entry</h3>
+          <p className="text-xs text-[#9CA3AF]">Fill form yourself</p>
+        </div>
       </button>
     </div>
   );
 
+  
   const renderForm = () => (
     <div className="animate-fade-in">
       <div className="flex items-center mb-4">
-        <button onClick={() => { setView('menu'); setMessage(null); }} className="p-1 hover:bg-gray-800 rounded text-gray-400 hover:text-white transition">
+        <button
+          onClick={() => { setView('menu'); setMessage(null); }}
+          className="p-1 hover:bg-[#1E1E1E] rounded text-[#9CA3AF] hover:text-white transition-all"
+        >
           <ChevronLeft size={24} />
         </button>
         <h2 className="text-lg font-bold ml-2 text-white">Add Manually</h2>
       </div>
 
-      {/* 4. FIXED: Rendering Logic for Object Message */}
+      {/* Message */}
       {message && (
-        <div className={`p-3 mb-4 rounded-lg text-sm flex items-center gap-2 ${message.type === 'success' ? "bg-green-900/50 text-green-200 border border-green-800" : "bg-red-900/50 text-red-200 border border-red-800"}`}>
+        <div className={`p-3 mb-4 rounded-lg text-sm flex items-center gap-2 ${message.type === 'success'
+            ? "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30"
+            : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30"
+          }`}>
           {message.text}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Job Link */}
         <div>
-          <label className="block text-xs text-gray-500 mb-1 uppercase">Job Link</label>
-          <input type="text" name="link" value={form.link} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-sm text-blue-300 outline-none" placeholder="https://..." />
+          <label className="block text-xs text-[#9CA3AF] mb-1 uppercase font-medium">Job Link</label>
+          <input
+            type="text"
+            name="link"
+            value={form.link}
+            onChange={handleChange}
+            className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg p-2 text-sm text-[#10B981] outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all"
+            placeholder="https://..."
+          />
         </div>
 
+        {/* Company & Position */}
         <div className="flex gap-3">
           <div className="w-1/2">
-            <label className="block text-xs text-gray-500 mb-1 uppercase">Company</label>
-            <input type="text" name="company" value={form.company} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-sm outline-none" required />
+            <label className="block text-xs text-[#9CA3AF] mb-1 uppercase font-medium">Company</label>
+            <input
+              type="text"
+              name="company"
+              value={form.company}
+              onChange={handleChange}
+              className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg p-2 text-sm text-white outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all"
+              required
+            />
           </div>
           <div className="w-1/2">
-            <label className="block text-xs text-gray-500 mb-1 uppercase">Position</label>
-            <input type="text" name="position" value={form.position} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-sm outline-none" required />
+            <label className="block text-xs text-[#9CA3AF] mb-1 uppercase font-medium">Position</label>
+            <input
+              type="text"
+              name="position"
+              value={form.position}
+              onChange={handleChange}
+              className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg p-2 text-sm text-white outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all"
+              required
+            />
           </div>
         </div>
 
-        {/* NEW: Type Field Visible in Form */}
+        {/* Type & Status */}
         <div className="flex gap-3">
           <div className="w-1/2">
-            <label className="block text-xs text-gray-500 mb-1 uppercase">Type</label>
+            <label className="block text-xs text-[#9CA3AF] mb-1 uppercase font-medium">Type</label>
             <select
               name="jobType"
               value={form.jobType}
               onChange={handleChange}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-sm outline-none text-white appearance-none"
+              className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg p-2 text-sm outline-none text-white appearance-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all cursor-pointer"
             >
-              <option value="full-time">Full-Time</option>
-              <option value="part-time">Part-Time</option>
-              <option value="internship">Internship</option>
-              <option value="remote">Remote</option>
+              <option value="full-time" className="bg-[#141414]">Full-Time</option>
+              <option value="part-time" className="bg-[#141414]">Part-Time</option>
+              <option value="internship" className="bg-[#141414]">Internship</option>
+              <option value="remote" className="bg-[#141414]">Remote</option>
             </select>
           </div>
           <div className="w-1/2">
-            <label className="block text-xs text-gray-500 mb-1 uppercase">Status</label>
-            <select name="status" value={form.status} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-sm outline-none">
-              <option value="pending">⏳ Pending</option>
-              <option value="interview">🗣️ Interview</option>
-              <option value="declined">❌ Declined</option>
-              <option value="offered">🎉 Offered</option>
+            <label className="block text-xs text-[#9CA3AF] mb-1 uppercase font-medium">Status</label>
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg p-2 text-sm outline-none text-white focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all cursor-pointer"
+            >
+              <option value="pending" className="bg-[#141414]">⏳ Pending</option>
+              <option value="interview" className="bg-[#141414]">🗣️ Interview</option>
+              <option value="declined" className="bg-[#141414]">❌ Declined</option>
+              <option value="offered" className="bg-[#141414]">🎉 Offered</option>
             </select>
           </div>
         </div>
+
+        {/* Location */}
         <div>
-          <label className="block text-xs text-gray-500 mb-1 uppercase">Location</label>
-          <input type="text" name="jobLocation" value={form.jobLocation} onChange={handleChange} className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2 text-sm outline-none" />
+          <label className="block text-xs text-[#9CA3AF] mb-1 uppercase font-medium">Location</label>
+          <input
+            type="text"
+            name="jobLocation"
+            value={form.jobLocation}
+            onChange={handleChange}
+            className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg p-2 text-sm text-white outline-none focus:border-[#10B981] focus:ring-1 focus:ring-[#10B981] transition-all"
+          />
         </div>
 
-        <button type="submit" disabled={loading} className={`w-full font-bold py-3 px-4 rounded-xl mt-4 transition ${loading ? "bg-gray-700" : "bg-blue-600 hover:bg-blue-500 text-white"}`}>
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full font-bold py-3 px-4 rounded-xl mt-4 transition-all ${loading
+              ? "bg-[#1E1E1E] text-[#6B7280] cursor-not-allowed"
+              : "bg-[#10B981] hover:bg-[#059669] text-white shadow-lg shadow-[#10B981]/20 hover:shadow-[#10B981]/30"
+            }`}
+        >
           {loading ? "Saving..." : "Add to Dashboard"}
         </button>
       </form>
