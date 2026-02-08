@@ -3,7 +3,8 @@
 **JobFlow.ai** is a distributed system designed to bridge the gap between job browsing and application management. It combines a **Chrome Extension** for instant data extraction with a **MERN Stack Dashboard** powered by **Groq AI** to score resumes and track applications in real-time.
 
 ---
-
+## 🚀 Live Demo: 
+[Live Link](https://job-flow-ai-3jyp.vercel.app/)
 ## 🚀 Key Features
 
 ### 🧩 Chrome Extension (The Bridge)
