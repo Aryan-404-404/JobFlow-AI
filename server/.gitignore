@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment Variables (CRITICAL SECURITY)
+.env
+
+# Logs
+npm-debug.log*
+logs/
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Personal Notes
+notes.md
+
+# Editor directories
+.vscode/
+.idea/

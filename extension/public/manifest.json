@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "JobFLow AI",
+  "version": "1.0",
+  "description": "Quickly save jobs to your dashboard.",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Add Job"
+  },
+  "permissions": [
+    "storage", 
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "https://jobflow-api.onrender.com/*" 
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
