@@ -6,44 +6,44 @@ const router = express.Router();
 
 router.get(
     "/google",
-    // passport.authenticate("google") tells Passport:
-    // "Take over! Send this user to the Google Login Page."
     passport.authenticate("google", {
-        // scope: What data do we want?
-        // "profile" = Name, Photo, ID
-        // "email" = Their email address
         scope: ["profile", "email"],
-
-        // session: false because we use JWTs, not server sessions
         session: false
     })
 );
 
-// ROUTE B: THE ARRIVAL GATE 🛬
-// URL: /api/auth/google/callback
 router.get(
     "/google/callback",
-
-    // 1. THE SECURITY CHECK
-    // Passport grabs the code from the URL, talks to Google, 
-    // and runs that "Strategy" function we wrote earlier.
-    // If it fails, we kick them back to "/login".
     passport.authenticate("google", {
         session: false,
         failureRedirect: `${process.env.CLIENT_URL}/login?error=google_failed`
     }),
     (req, res) => {
+        console.log('========== OAUTH CALLBACK HIT ==========');
+        console.log('✅ User authenticated:', req.user?.email);
+        console.log('📧 User ID:', req.user?._id);
+        console.log('🌍 CLIENT_URL:', process.env.CLIENT_URL);
+        
         const token = jwt.sign(
             { id: req.user._id },
             process.env.JWT_SECRET,
             { expiresIn: "30d" }
         );
+        
+        console.log('🔑 JWT Token created (first 20 chars):', token.substring(0, 20) + '...');
+        
         res.cookie('token', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'None',
-            maxAge: 30 * 24 * 60 * 60 * 1000
-        })
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+        
+        console.log('🍪 Cookie set with: httpOnly=true, secure=true, sameSite=None');
+        console.log('🔄 Redirecting to:', process.env.CLIENT_URL);
+        console.log('==========================================');
+        
         res.redirect(process.env.CLIENT_URL || "http://localhost:5173/");   
     }
 );
