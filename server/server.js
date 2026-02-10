@@ -19,10 +19,23 @@ const app = express()
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: [process.env.CLIENT_URL, "http://localhost:5173", "chrome-extension://iifjoheiblphehnnaoepjfpbcgemcmgi"
-],
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            process.env.CLIENT_URL,
+            "http://localhost:5173",
+            "chrome-extension://iifjoheiblphehnnaoepjfpbcgemcmgi"
+        ];
+        if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+            callback(null, true);
+        } else {
+            console.log("🚫 CORS Blocked:", origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
-}))
+}));
 app.set("trust proxy", 1);
 
 app.use(cookieParser())
@@ -35,12 +48,12 @@ app.use("/api/auth", authRoutes);
 
 app.use(errorHandler)
 
-app.get('/', (req, res)=>{
+app.get('/', (req, res) => {
     res.send('API is running...')
 })
-app.get('/ping', (req, res)=>{
+app.get('/ping', (req, res) => {
     res.send('pong')
 })
-app.listen(PORT, ()=>{
+app.listen(PORT, () => {
     console.log(`Server running at PORT ${PORT}`);
 })
