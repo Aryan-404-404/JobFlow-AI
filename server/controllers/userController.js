@@ -126,5 +126,44 @@ const updateResume = asyncHandler(async (req, res) => {
         throw new Error("User not found");
     }
 })
+const verifyToken = asyncHandler(async (req, res) => {
+    const { token } = req.body;
+    
+    if (!token) {
+        res.status(400);
+        throw new Error("Token is required");
+    }
 
-export { login, register, getUser, updateUser, logOut, getResume, updateResume }
+    try {
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Fetch user
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            res.status(404);
+            throw new Error("User not found");
+        }
+
+        // NOW set the httpOnly cookie (in same-site context)
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== 'development',
+            sameSite: 'None',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
+        // Return user data
+        res.status(200).json({
+            userId: user._id,
+            name: user.name,
+            email: user.email,
+        });
+    } catch (error) {
+        res.status(401);
+        throw new Error("Invalid or expired token");
+    }
+});
+
+export { login, register, getUser, updateUser, logOut, getResume, updateResume, verifyToken }

@@ -32,19 +32,23 @@ router.get(
         
         console.log('🔑 JWT Token created (first 20 chars):', token.substring(0, 20) + '...');
         
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            path: '/'
-        });
+        // res.cookie('token', token, {
+        //     httpOnly: true,
+        //     secure: true,
+        //     sameSite: 'None',
+        //     maxAge: 30 * 24 * 60 * 60 * 1000,
+        //     path: '/'
+        // });
         
-        console.log('🍪 Cookie set with: httpOnly=true, secure=true, sameSite=None');
-        console.log('🔄 Redirecting to:', process.env.CLIENT_URL);
-        console.log('==========================================');
+        // console.log('🍪 Cookie set with: httpOnly=true, secure=true, sameSite=None');
+        // console.log('🔄 Redirecting to:', process.env.CLIENT_URL);
+        // console.log('==========================================');
         
-        res.redirect(process.env.CLIENT_URL || "http://localhost:5173/");   
+        // res.redirect(process.env.CLIENT_URL || "http://localhost:5173/");   
+        console.log('🔄 Redirecting to callback page with token');
+        
+        // ✅ Pass token in URL (temporary, will be consumed immediately)
+        res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
     }
 );
 

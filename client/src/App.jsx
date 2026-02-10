@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom"
 import AuthPage from './page/AuthPage'
 import Dashboard from './page/Dashboard'
 import Jobs from './page/Jobs'
+import AuthCallback from './page/AuthCallback'
 import { useAuth } from './context/AuthContext'
 import { useLocation } from 'react-router-dom'
 
@@ -33,6 +34,7 @@ function App() {
         <Route path='/' element={user ? <Dashboard /> : <GetStarted />} />
         <Route path='/login' element={<AuthPage setUser={setUser} />} />
         <Route path='/jobs' element={<Jobs />} />
+        <Route path='/auth/callback' element={<AuthCallback />} />
       </Routes>
     </>
   )
