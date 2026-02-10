@@ -48,7 +48,7 @@ router.get(
         console.log('🔄 Redirecting to callback page with token');
         
         // ✅ Pass token in URL (temporary, will be consumed immediately)
-        res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}`);
+        res.redirect(`${process.env.CLIENT_URL}/user/auth/callback?token=${token}`);
     }
 );
 
