@@ -229,17 +229,17 @@ const AuthPage = ({ setUser }) => {
           </div>
 
           {/* Divider */}
-          <div className="relative my-6">
+          {/* <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[#2A2A2A]"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-[#141414] text-[#6B7280]">Or continue with</span>
             </div>
-          </div>
+          </div> */}
 
           {/* Social Login */}
-          <div className="space-y-3">
+          {/* <div className="space-y-3">
             <button 
             type="button"
             onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/auth/google`, "_self")}
@@ -264,7 +264,7 @@ const AuthPage = ({ setUser }) => {
               </svg>
               <span>Google</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Extension CTA */}
           {!isLogin && (

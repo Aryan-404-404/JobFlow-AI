@@ -9,6 +9,7 @@ export default function Navbar() {
     const { user } = useAuth() //useContext
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [profile, setProfile] = useState(false)
+    const [download, setDownload] = useState(false)
 
     const navLinks = [
         { name: 'Home', href: '/' },
@@ -47,18 +48,6 @@ export default function Navbar() {
                     {/* Right Side Actions */}
                     {user ? (
                         <div className="hidden md:flex items-center space-x-3">
-                            <button className="flex items-center space-x-2 bg-[#10B981] hover:bg-[#059669] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
-                                <Download size={18} />
-                                <span>Get Extension</span>
-                            </button>
-
-                            <button className="text-[#9CA3AF] hover:text-white hover:bg-[#1E1E1E] p-2 rounded-lg transition-all relative">
-                                <Bell size={20} />
-                                <span className="absolute top-1 right-1 bg-[#10B981] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
-                                    5
-                                </span>
-                            </button>
-
                             <button className="text-[#9CA3AF] hover:text-white hover:bg-[#1E1E1E] p-2 rounded-lg transition-all">
                                 <Settings size={20} />
                             </button>
@@ -129,29 +118,12 @@ export default function Navbar() {
                         ))}
                     </div>
 
-                    <div className="px-4 py-3 border-t border-[#1E1E1E] space-y-3">
-                        <button className="flex items-center justify-center space-x-2 bg-[#10B981] hover:bg-[#059669] text-white w-full px-4 py-3 rounded-lg text-sm font-medium transition-all">
-                            <Download size={18} />
-                            <span>Get Extension</span>
+                    <div className="px-4 py-3 border-t border-[#1E1E1E] space-y-3 flex">
+                        <button className="text-[#9CA3AF] hover:text-white hover:bg-[#1E1E1E] p-3 rounded-lg transition-all flex items-center">
+                            <div className="flex items-center justify-center pt-2">
+                                <Settings size={20} />
+                            </div>
                         </button>
-
-                        <div className="flex items-center justify-between gap-2">
-                            <button className="text-[#9CA3AF] hover:text-white hover:bg-[#1E1E1E] p-3 rounded-lg transition-all relative flex-1">
-                                <div className="flex items-center justify-center">
-                                    <Bell size={20} />
-                                    <span className="absolute top-2 right-1/2 transform translate-x-3 bg-[#10B981] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
-                                        5
-                                    </span>
-                                </div>
-                            </button>
-
-                            <button className="text-[#9CA3AF] hover:text-white hover:bg-[#1E1E1E] p-3 rounded-lg transition-all flex-1">
-                                <div className="flex items-center justify-center">
-                                    <Settings size={20} />
-                                </div>
-                            </button>
-                        </div>
-
                         <button
                             onClick={() => setProfile(!profile)}
                             className="flex items-center space-x-3 hover:bg-[#1E1E1E] w-full px-4 py-3 rounded-lg transition-all cursor-pointer"

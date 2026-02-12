@@ -6,6 +6,7 @@ import Toast from '../components/Toast';
 import { useNavigate } from 'react-router-dom'
 import { useJob } from '../context/JobContext';
 import ResumeSection from '../components/ResumeSection';
+import { handleDownload } from '../utils/handleDownload';
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -162,8 +163,6 @@ export default function Dashboard() {
 
           {/* Right Side - Extension Promo & Quick Actions (25% width = 1 column) */}
           <div className="lg:col-span-1 space-y-6">
-            
-            {/* Extension Promo */}
             <div className="bg-linear-to-br from-[#10B981] to-[#059669] rounded-xl p-6">
               <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-4">
                 <Download size={20} className="text-white" />
@@ -172,7 +171,9 @@ export default function Dashboard() {
               <p className="text-white/80 text-sm mb-6">
                 Install our Chrome extension to automatically track job applications from LinkedIn, Indeed, and more.
               </p>
-              <button className="w-full bg-white hover:bg-gray-100 text-[#059669] py-2.5 rounded-lg font-medium transition flex items-center justify-center space-x-2">
+              <button 
+              onClick={handleDownload}
+              className="w-full bg-white hover:bg-gray-100 text-[#059669] py-2.5 rounded-lg font-medium transition flex items-center justify-center space-x-2">
                 <Download size={16} />
                 <span>Get it now</span>
               </button>

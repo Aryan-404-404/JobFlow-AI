@@ -9,6 +9,7 @@ import Jobs from './page/Jobs'
 import AuthCallback from './page/AuthCallback'
 import { useAuth } from './context/AuthContext'
 import { useLocation } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <Toaster />
       <Routes>
         <Route path='/' element={user ? <Dashboard /> : <GetStarted />} />
         <Route path='/login' element={<AuthPage setUser={setUser} />} />
