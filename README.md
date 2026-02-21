@@ -5,21 +5,28 @@
 ---
 ## 🚀 Live Demo: 
 [Live Link](https://job-flow-ai-3jyp.vercel.app/)
+
+---
+
 ## 🚀 Key Features
 
 ### 🧩 Chrome Extension (The Bridge)
 * **1-Click Job Scraping:** Automatically extracts job details (Title, Company, Location, Description) from LinkedIn and other job boards using custom DOM manipulation scripts.
-* **Seamless Auth:** Shares authentication state with the web dashboard via `httpOnly` cookies—no need to log in twice.
+* **Seamless Auth:** Shares authentication state with the web dashboard via `httpOnly` cookies.
 * **Instant AI Insight:** Get a quick "Fit Check" directly on the job page before you even apply.
 
+---
+
 ### 🧠 AI-Powered Analysis (The Brain)
-* **Resume Scoring:** Uses **Groq (Llama 3.3)** to semantically analyze your resume against specific job descriptions.
+* **Resume Scoring:** Uses **Groq (Llama 3-70B)** to semantically analyze your resume against specific job descriptions.
 * **Gap Analysis:** Returns a 0-100 match score and identifies missing keywords or skills.
 * **Structured Output:** AI responses are strictly formatted as JSON to ensure consistent UI rendering.
 
-### 🛡️ Enterprise-Grade Security
-* **Hybrid Authentication:** Supports both Google OAuth 2.0 (Passport.js) and Email/Password login.
-* **Smart Account Linking:** Automatically merges accounts if a user signs up with Google after using Email.
+---
+
+### 🛡️ Secure Authentication
+* **Email/Password Authentication**
+* **JWT-based Session Handling**
 * **Secure Session Management:** Uses `httpOnly`, `Secure`, and `SameSite=None` cookies to prevent XSS attacks while allowing cross-origin requests from the extension.
 
 ---
@@ -29,7 +36,7 @@
 | Component | Technologies |
 | :--- | :--- |
 | **Frontend** | React.js, Vite, Tailwind CSS, Lucide React, Context API |
-| **Backend** | Node.js, Express.js, MongoDB (Mongoose), Passport.js |
+| **Backend** | Node.js, Express.js, MongoDB (Mongoose) |
 | **AI Engine** | Groq API (Llama 3-70B), Prompt Engineering |
 | **Extension** | Manifest V3, Chrome Scripting API, Shadow DOM |
 | **DevOps** | Render (Backend), Vercel (Frontend) |
@@ -44,11 +51,17 @@ Instead of storing sensitive JWTs in LocalStorage (which is vulnerable to XSS), 
 * The browser automatically attaches the secure cookie to requests from both origins.
 * This ensures the Extension is always in sync with the Web Dashboard.
 
+---
+
 ### 2. Robust Database Schema
-* **Sparse Indexing:** The MongoDB User schema uses `sparse: true` for `googleId`, allowing the system to handle millions of users who might strictly use Email/Password without breaking unique constraints.
+* Designed to scale for high user volume.
+* Optimized indexing for fast queries and efficient data retrieval.
+
+---
 
 ### 3. Separation of Concerns
-* The Extension uses isolated `useEffect` hooks: one for **Browser Interactions** (scraping the active tab) and another for **Network Requests** (checking auth status). This prevents race conditions and ensures a smooth user experience.
+* The Extension uses isolated `useEffect` hooks: one for **Browser Interactions** (scraping the active tab) and another for **Network Requests** (checking auth status).
+* Prevents race conditions and ensures a smooth user experience.
 
 ---
 
