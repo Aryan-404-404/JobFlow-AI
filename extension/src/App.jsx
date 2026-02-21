@@ -108,6 +108,7 @@ function App() {
       const res = await api.post('/job/createJob', { ...form, description: description });
       if (res.status === 200 || res.status === 201) {
         setMessage({ text: "✅ Job Saved Successfully!", type: "success" });
+        console.log("✅ Job Saved Successfully!", res.data)
         setForm({
           company: "",
           position: "",
@@ -191,6 +192,26 @@ function App() {
       setLoading(false);
     }
   };
+
+  const handleLogout = () => {
+  // Clear extension cookies
+  if (typeof chrome !== "undefined" && chrome.cookies) {
+    chrome.cookies.getAll({ 
+      url: "https://jobflow-ai-9xi5.onrender.com" 
+    }, (cookies) => {
+      cookies.forEach(cookie => {
+        chrome.cookies.remove({
+          url: "https://jobflow-ai-9xi5.onrender.com",
+          name: cookie.name
+        });
+      });
+      console.log("Cookies cleared");
+    });
+  }
+  
+  // Reset auth state
+  setAuthState({ isLoading: false, isAuthenticated: false, user: null });
+};
 
   // UI section --------->
   const renderAiResult = () => {
@@ -299,6 +320,19 @@ function App() {
           <h3 className="font-bold">Manual Entry</h3>
           <p className="text-xs text-[#9CA3AF]">Fill form yourself</p>
         </div>
+      </button>
+
+      {/* Logout Button */}
+      <button
+        onClick={handleLogout}
+        className="mt-auto bg-red-900/30 hover:bg-red-900/50 border border-red-700/50 text-red-100 p-3 rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
       </button>
     </div>
   );
