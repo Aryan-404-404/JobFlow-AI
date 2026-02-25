@@ -15,7 +15,7 @@
   ],
   "host_permissions": [
     "http://localhost:5000/*",
-    "https://jobflow-api.onrender.com/*" 
+    "https://jobflow-ai-9xi5.onrender.com/*" 
   ],
   "content_scripts": [
     {

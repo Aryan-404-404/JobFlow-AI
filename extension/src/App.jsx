@@ -7,7 +7,9 @@ import {
   Zap,
   BrainCircuit,
   ChevronLeft,
-  Briefcase
+  Briefcase,
+  Mail,
+  Copy
 } from 'lucide-react';
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("")
   const [aiResult, setAiResult] = useState(null);
+  const [emailData, setEmailData] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
   const [authState, setAuthState] = useState({
     isLoading: true,
     isAuthenticated: false,
@@ -193,27 +197,159 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-  // Clear extension cookies
-  if (typeof chrome !== "undefined" && chrome.cookies) {
-    chrome.cookies.getAll({ 
-      url: "https://jobflow-ai-9xi5.onrender.com" 
-    }, (cookies) => {
-      cookies.forEach(cookie => {
-        chrome.cookies.remove({
-          url: "https://jobflow-ai-9xi5.onrender.com",
-          name: cookie.name
-        });
+  const handleDraftEmail = async () => {
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const rawData = await scrapeJobData();
+      setMessage({ text: "✍️ AI is drafting your email...", type: "success" });
+
+      const emailRes = await api.post('/ai/generateEmail', {
+        title: rawData.headerText,
+        description: rawData.descriptionText
       });
-      console.log("Cookies cleared");
-    });
-  }
-  
-  // Reset auth state
-  setAuthState({ isLoading: false, isAuthenticated: false, user: null });
-};
+
+      if (emailRes.data.success) {
+        setEmailData({
+          subject: emailRes.data.subject,
+          body: emailRes.data.body
+        });
+        setMessage({ text: "✨ Email drafted successfully!", type: "success" });
+        setView('email-result');
+      } else {
+        setMessage({ text: `❌ ${emailRes.data.body}`, type: "error" });
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage({ text: "❌ Failed to generate email. Make sure resume is uploaded.", type: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCopyEmail = () => {
+    const fullText = `Subject: ${emailData.subject}\n\n${emailData.body}`;
+    navigator.clipboard.writeText(fullText);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleLogout = () => {
+    // Clear extension cookies
+    if (typeof chrome !== "undefined" && chrome.cookies) {
+      chrome.cookies.getAll({
+        url: "https://jobflow-ai-9xi5.onrender.com"
+      }, (cookies) => {
+        cookies.forEach(cookie => {
+          chrome.cookies.remove({
+            url: "https://jobflow-ai-9xi5.onrender.com",
+            name: cookie.name
+          });
+        });
+        console.log("Cookies cleared");
+      });
+    }
+
+    // Reset auth state
+    setAuthState({ isLoading: false, isAuthenticated: false, user: null });
+  };
 
   // UI section --------->
+
+  const renderMenu = () => (
+    <div className="flex flex-col h-full space-y-4 pt-4">
+      {/* Header */}
+      <div className="text-center mb-2">
+        <h1 className="text-2xl font-bold text-white flex items-center justify-center gap-2">
+          <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center shadow-lg shadow-[#10B981]/30">
+            <Briefcase size={20} className="text-white" />
+          </div>
+          JobFlow AI
+        </h1>
+      </div>
+
+      {/* AI Fit Check */}
+      <button
+        onClick={handleAiCheck}
+        disabled={loading}
+        className="bg-purple-600/10 hover:bg-purple-600/20 border border-purple-500/30 text-white p-4 rounded-xl flex items-center gap-4 transition-all group w-full disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <div className="bg-purple-600/20 p-3 rounded-lg group-hover:scale-110 transition-all">
+          {loading ? (
+            <div className="animate-spin h-6 w-6 border-2 border-purple-400 border-t-transparent rounded-full" />
+          ) : (
+            <BrainCircuit size={24} className="text-purple-400" />
+          )}
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold text-white">AI Fit Check</h3>
+          <p className="text-xs text-purple-300">{loading ? "Analyzing..." : "Score match with resume"}</p>
+        </div>
+      </button>
+
+      {/* 1-Click Save */}
+      <button
+        onClick={handleQuickSave}
+        className="bg-[#10B981]/10 hover:bg-[#10B981]/20 border border-[#10B981]/30 text-white p-4 rounded-xl flex items-center gap-4 transition-all group w-full"
+      >
+        <div className="bg-[#10B981]/20 p-3 rounded-lg group-hover:scale-110 transition-all">
+          <Zap size={24} className="text-[#10B981]" />
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold text-white">1-Click Save</h3>
+          <p className="text-xs text-[#10B981]/80">Auto-extract details</p>
+        </div>
+      </button>
+
+      {/* Manual Entry */}
+      <button
+        onClick={() => setView('manual')}
+        className="bg-[#1E1E1E] hover:bg-[#2A2A2A] border border-[#2A2A2A] text-white p-4 rounded-xl flex items-center gap-4 transition-all group w-full"
+      >
+        <div className="bg-[#2A2A2A] p-3 rounded-lg group-hover:scale-110 transition-all">
+          <ClipboardList size={24} className="text-[#9CA3AF]" />
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold text-white">Manual Entry</h3>
+          <p className="text-xs text-[#9CA3AF]">Fill form yourself</p>
+        </div>
+      </button>
+
+      {/* Draft Cold Email */}
+      <button
+        onClick={handleDraftEmail}
+        disabled={loading}
+        className="bg-cyan-600/10 hover:bg-cyan-600/20 border border-cyan-500/30 text-white p-4 rounded-xl flex items-center gap-4 transition-all group w-full disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <div className="bg-cyan-600/20 p-3 rounded-lg group-hover:scale-110 transition-all">
+          {loading && view === 'menu' ? (
+            <div className="animate-spin h-6 w-6 border-2 border-cyan-400 border-t-transparent rounded-full" />
+          ) : (
+            <Mail size={24} className="text-cyan-400" />
+          )}
+        </div>
+        <div className="text-left">
+          <h3 className="font-bold text-white">Draft Cold Email</h3>
+          <p className="text-xs text-cyan-300">{loading ? "Drafting..." : "Generate cover letter"}</p>
+        </div>
+      </button>
+
+      {/* Logout Button */}
+      <button
+        onClick={handleLogout}
+        className="mt-auto bg-[#EF4444]/10 hover:bg-[#EF4444]/20 border border-[#EF4444]/30 text-[#EF4444] p-3 rounded-xl flex items-center justify-center gap-2 transition-all text-sm font-medium"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        Logout
+      </button>
+    </div>
+  );
+
   const renderAiResult = () => {
     if (!aiResult) return null;
     const status = getMatchStatus(aiResult.score);
@@ -263,81 +399,56 @@ function App() {
       </div>
     );
   };
-  
-  const renderMenu = () => (
-    <div className="flex flex-col h-full space-y-4 pt-4">
-      <div className="text-center mb-2">
-        <h1 className="text-2xl font-bold text-white flex items-center justify-center gap-2">
-          <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center">
-            <Briefcase size={20} className="text-white" />
+
+  const renderEmailView = () => {
+    if (!emailData) return null;
+
+    return (
+      <div className="animate-fade-in space-y-4 flex flex-col h-full pb-4">
+        {/* Header */}
+        <div className="flex items-center">
+          <button
+            onClick={() => setView('menu')}
+            className="p-1 hover:bg-[#1E1E1E] rounded text-[#9CA3AF] hover:text-white transition-all"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <h2 className="text-lg font-bold ml-2 text-white">AI Cold Email</h2>
+        </div>
+
+        {/* Email Content */}
+        <div className="bg-[#141414] p-4 rounded-xl border border-[#2A2A2A] flex-1 flex flex-col gap-3">
+          <div>
+            <label className="text-xs text-[#9CA3AF] font-bold uppercase mb-1 block">Subject</label>
+            <div className="bg-[#0A0A0A] p-2 rounded-lg text-sm text-white border border-[#2A2A2A]">
+              {emailData.subject}
+            </div>
           </div>
-          JobFlow AI
-        </h1>
+
+          <div className="flex-1 flex flex-col">
+            <label className="text-xs text-[#9CA3AF] font-bold uppercase mb-1 block">Message</label>
+            <textarea
+              readOnly
+              className="w-full flex-1 bg-[#0A0A0A] p-3 rounded-lg text-sm text-gray-300 border border-[#2A2A2A] resize-none outline-none custom-scrollbar min-h-50"
+              value={emailData.body}
+            />
+          </div>
+        </div>
+
+        {/* Copy Button */}
+        <button
+          onClick={handleCopyEmail}
+          className={`w-full font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 ${isCopied
+            ? "bg-[#10B981] text-white"
+            : "bg-[#1E1E1E] hover:bg-[#2A2A2A] text-white border border-[#2A2A2A]"
+            }`}
+        >
+          {isCopied ? "✅ Copied to Clipboard!" : <><Copy size={18} /> Copy Email</>}
+        </button>
       </div>
+    );
+  };
 
-      {/* AI Fit Check */}
-      <button
-        onClick={handleAiCheck}
-        disabled={loading}
-        className="bg-purple-900/30 hover:bg-purple-900/50 border border-purple-700/50 text-purple-100 p-4 rounded-xl flex items-center gap-4 transition-all group w-full"
-      >
-        <div className="bg-purple-800 p-3 rounded-full group-hover:scale-110 transition">
-          {loading ? (
-            <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full" />
-          ) : (
-            <BrainCircuit size={24} />
-          )}
-        </div>
-        <div className="text-left">
-          <h3 className="font-bold">AI Fit Check</h3>
-          <p className="text-xs text-purple-300">{loading ? "Analyzing..." : "Score match with resume"}</p>
-        </div>
-      </button>
-
-      {/* 1-Click Save */}
-      <button
-        onClick={handleQuickSave}
-        className="bg-indigo-900/30 hover:bg-indigo-900/50 border border-indigo-700/50 text-indigo-100 p-4 rounded-xl flex items-center gap-4 transition-all group"
-      >
-        <div className="bg-indigo-800 p-3 rounded-full group-hover:scale-110 transition">
-          <Zap size={24} />
-        </div>
-        <div className="text-left">
-          <h3 className="font-bold">1-Click Save</h3>
-          <p className="text-xs text-indigo-300">Auto-extract details</p>
-        </div>
-      </button>
-
-      {/* Manual Entry */}
-      <button
-        onClick={() => setView('manual')}
-        className="bg-[#1E1E1E] hover:bg-[#2A2A2A] border border-[#2A2A2A] text-gray-100 p-4 rounded-xl flex items-center gap-4 transition-all group"
-      >
-        <div className="bg-[#2A2A2A] p-3 rounded-full group-hover:scale-110 transition">
-          <ClipboardList size={24} />
-        </div>
-        <div className="text-left">
-          <h3 className="font-bold">Manual Entry</h3>
-          <p className="text-xs text-[#9CA3AF]">Fill form yourself</p>
-        </div>
-      </button>
-
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="mt-auto bg-red-900/30 hover:bg-red-900/50 border border-red-700/50 text-red-100 p-3 rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Logout
-      </button>
-    </div>
-  );
-
-  
   const renderForm = () => (
     <div className="animate-fade-in">
       <div className="flex items-center mb-4">
@@ -353,8 +464,8 @@ function App() {
       {/* Message */}
       {message && (
         <div className={`p-3 mb-4 rounded-lg text-sm flex items-center gap-2 ${message.type === 'success'
-            ? "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30"
-            : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30"
+          ? "bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30"
+          : "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30"
           }`}>
           {message.text}
         </div>
@@ -449,8 +560,8 @@ function App() {
           type="submit"
           disabled={loading}
           className={`w-full font-bold py-3 px-4 rounded-xl mt-4 transition-all ${loading
-              ? "bg-[#1E1E1E] text-[#6B7280] cursor-not-allowed"
-              : "bg-[#10B981] hover:bg-[#059669] text-white shadow-lg shadow-[#10B981]/20 hover:shadow-[#10B981]/30"
+            ? "bg-[#1E1E1E] text-[#6B7280] cursor-not-allowed"
+            : "bg-[#10B981] hover:bg-[#059669] text-white shadow-lg shadow-[#10B981]/20 hover:shadow-[#10B981]/30"
             }`}
         >
           {loading ? "Saving..." : "Add to Dashboard"}
@@ -464,6 +575,7 @@ function App() {
       {view === 'menu' && renderMenu()}
       {view === 'manual' && renderForm()}
       {view === 'ai-result' && renderAiResult()}
+      {view === 'email-result' && renderEmailView()}
     </div>
   );
 }
