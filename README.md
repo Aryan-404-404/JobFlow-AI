@@ -4,7 +4,8 @@
 
 ---
 ## 🚀 Live Demo: 
-[Live Link](https://job-flow-ai-3jyp.vercel.app/)
+* [Demo Video](https://www.loom.com/share/887e1a1ce729484db489b1ae1624101a)
+* [Live Link](https://job-flow-ai-3jyp.vercel.app/)
 
 ---
 
