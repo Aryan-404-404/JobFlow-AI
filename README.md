@@ -13,8 +13,9 @@
 
 ### 🧩 Chrome Extension (The Bridge)
 * **1-Click Job Scraping:** Automatically extracts job details (Title, Company, Location, Description) from LinkedIn and other job boards using custom DOM manipulation scripts.
-* **Seamless Auth:** Shares authentication state with the web dashboard via `httpOnly` cookies.
 * **Instant AI Insight:** Get a quick "Fit Check" directly on the job page before you even apply.
+* **Generate Cold Email:** Generate a cold email to increase the chances of getting hired.
+* **Seamless Auth:** Shares authentication state with the web dashboard via `httpOnly` cookies.
 
 ---
 
