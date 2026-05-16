@@ -11,7 +11,8 @@
     "storage", 
     "activeTab",
     "scripting",
-    "tabs"
+    "tabs",
+    "cookies" 
   ],
   "host_permissions": [
     "http://localhost:5000/*",

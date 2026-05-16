@@ -10,8 +10,9 @@ const generateToken = (res, userId) => {
     )
     res.cookie('token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
+        secure: process.env.NODE_ENV !== 'development', 
         sameSite: 'None',
+        partitioned: true,
         maxAge: 30 * 24 * 60 * 60 * 1000
     })
 }
@@ -95,7 +96,8 @@ const logOut = asyncHandler(async (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'None'
+        sameSite: 'None',
+        partitioned: true
     })
     res.status(200).json({ message: "Logged out successfully!" })
 })
@@ -135,26 +137,23 @@ const verifyToken = asyncHandler(async (req, res) => {
     }
 
     try {
-        // Verify the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Fetch user
         const user = await User.findById(decoded.id);
         if (!user) {
             res.status(404);
             throw new Error("User not found");
         }
 
-        // NOW set the httpOnly cookie (in same-site context)
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== 'development',
             sameSite: 'None',
+            partitioned: true,
             maxAge: 30 * 24 * 60 * 60 * 1000,
             path: '/'
         });
 
-        // Return user data
         res.status(200).json({
             userId: user._id,
             name: user.name,
